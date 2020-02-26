@@ -3,6 +3,8 @@ import database.InterfaceUserDatabase;
 import database.datatables.*;
 import model.UserModel;
 
+import java.util.Optional;
+
 public class UserRepo implements InterfaceUserDatabase
 {
     private UserTable userTable;
@@ -12,38 +14,35 @@ public class UserRepo implements InterfaceUserDatabase
         userTable = new UserTable();
     }
 
-
     @Override
     public boolean addUser(UserModel user)
     {
-        return false;
+        return userTable.addUser(user);
     }
 
     @Override
     public boolean removeUser(UserModel user)
     {
-        return false;
+        return userTable.removeUser(user);
     }
 
     @Override
-    public boolean login(String username, String password)
+    public Optional<UserModel> login(String username, String password)
     {
-        return false;
+        return userTable.login(username, password);
     }
 
     @Override
     public boolean changeUsername(UserModel user, String newUsername)
     {
-        return false;
+        return userTable.changeUsername(user, newUsername);
     }
 
     @Override
     public boolean changePassword(UserModel user, String newPassword)
     {
-        return false;
+        return userTable.changePassword(user, newPassword);
     }
-
-
 
 
 
@@ -53,6 +52,21 @@ public class UserRepo implements InterfaceUserDatabase
     {
         UserRepo db = new UserRepo();
         UserModel user = new UserModel("alyssa", "lee");
+
+        //System.out.println(db.addUser(user));
+
+        if(db.login("alyssa", "lee").isPresent())
+        {
+            System.out.println("Login successful\n");
+            System.out.println(db.login("alyssa", "lee").get().getUsername());
+        }
+        else
+        {
+            System.out.println("Login unsuccessful\n");
+        }
+
+
+
 
     }
 }

@@ -8,6 +8,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -50,18 +51,17 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
     }
 
     /**
-     * Adds a user to the database
-     * @param user
-     * @return
+     * Adds a user to the database.
+     * Returns true if user is successfully added, false if otherwise.
      */
     public boolean addUser(UserModel user)
     {
         try
         {
             String query = "INSERT INTO MangoUser (IDNum, Fname, Lname, Username, Password)" +
-                    "VALUES (?, ?, ?, ?, ?, ?);";
+                    "VALUES (?, ?, ?, ?, ?);";
             PreparedStatement pState = connection.prepareStatement(query);
-            pState.setString(1, UUID.randomUUID().toString());       //TODO: Maybe add UUID, fname, and lname to UserModel instead of generating it here
+            pState.setString(1, UUID.randomUUID().toString());       //TODO: Add UUID, fname, and lname to UserModel instead of generating it here
             pState.setString(2, "firstname");                       //TODO: Change these firstname, lastname placeholders
             pState.setString(3, "lastname");
             pState.setString(4, user.getUsername());
@@ -75,16 +75,53 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
         }
     }
 
+    /**
+     * Removes a user from the database.
+     * Returns true if user is successfully added, false if otherwise.
+     */
     @Override
     public boolean removeUser(UserModel user)
     {
+/*        try
+        {
+            String query = "DELETE FROM MangoUser WHERE IDNum = ?";
+            PreparedStatement pState = connection.prepareStatement(query);
+            pState.setString(1, user.getId().toString());
+            pState.execute();
+            return true;
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }*/
         return false;
     }
 
+    /**
+     * Validates if a user is in the database.
+     * Returns an Optional UserModel
+     */
     @Override
-    public boolean login(String username, String password)
+    public Optional<UserModel> login(String username, String password)
     {
-        return false;
+        UserModel user = null;
+        try
+        {
+            String query = "SELECT * FROM MangoUser WHERE username = ? AND password = ?";
+            PreparedStatement pState = connection.prepareStatement(query);
+            pState.setString(1, username);
+            pState.setString(2, password);
+            resultSet = pState.executeQuery();
+
+            if(resultSet.next())
+            {
+                user = new UserModel(username, password);
+            }
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+        return Optional.ofNullable(user);
     }
 
     @Override
