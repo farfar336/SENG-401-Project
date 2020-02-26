@@ -124,16 +124,44 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
         return Optional.ofNullable(user);
     }
 
+    /**
+     * Changes a user's username if the username is not currently taken.
+     * Returns true if change was successful, returns false otherwise.
+     */
     @Override
     public boolean changeUsername(UserModel user, String newUsername)
     {
-        return false;
+        try
+        {
+            String query = "UPDATE MangoUser SET Username = ? WHERE IDNum = ?";
+            PreparedStatement pState = connection.prepareStatement(query);
+            pState.setString(1, newUsername);
+            pState.setString(2, user.getId());                          //TODO: Change to UserModel id getter function
+            pState.execute();
+            return true;
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
     public boolean changePassword(UserModel user, String newPassword)
     {
-        return false;
+        try
+        {
+            String query = "UPDATE MangoUser SET Password = ? WHERE IDNum = ?";
+            PreparedStatement pState = connection.prepareStatement(query);
+            pState.setString(1, newPassword);
+            pState.setString(2, user.getId());                          //TODO: Change to UserModel id getter function
+            pState.execute();
+            return true;
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 
