@@ -36,8 +36,6 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
             {
                 String query = "CREATE TABLE MangoUser " +
                         "(IDNum VARCHAR(255) NOT NULL," +
-                        "Fname VARCHAR(255) NOT NULL," +
-                        "LName VARCHAR(255) NOT NULL," +
                         "Username VARCHAR(255) NOT NULL," +
                         "Password VARCHAR(255) NOT NULL," +
                         "PRIMARY KEY (IDNum)," +
@@ -51,6 +49,36 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
     }
 
     /**
+     * Retrieves a user from the database
+     */
+    @Override
+    public Optional<UserModel> getUser(String username)
+    {
+        UserModel user = null;
+        try
+        {
+            String query = "SELECT * FROM MangoUser WHERE Username = ?";
+            PreparedStatement pState = connection.prepareStatement(query);
+            pState.setString(1, username);
+            resultSet = pState.executeQuery();
+
+            if(resultSet.next())
+            {
+                String password = resultSet.getString("Password");
+                UUID id = UUID.fromString(resultSet.getString("IDNum"));
+
+                user = new UserModel(username, password, id);
+            }
+
+        } catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+
+        return Optional.ofNullable(user);
+    }
+
+    /**
      * Adds a user to the database.
      * Returns true if user is successfully added, false if otherwise.
      */
@@ -58,14 +86,12 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
     {
         try
         {
-            String query = "INSERT INTO MangoUser (IDNum, Fname, Lname, Username, Password)" +
-                    "VALUES (?, ?, ?, ?, ?);";
+            String query = "INSERT INTO MangoUser (IDNum, Username, Password)" +
+                    "VALUES (?, ?, ?);";
             PreparedStatement pState = connection.prepareStatement(query);
-            pState.setString(1, UUID.randomUUID().toString());       //TODO: Add UUID, fname, and lname to UserModel instead of generating it here
-            pState.setString(2, "firstname");                       //TODO: Change these firstname, lastname placeholders
-            pState.setString(3, "lastname");
-            pState.setString(4, user.getUsername());
-            pState.setString(5, user.getPassword());
+            pState.setString(1, UUID.randomUUID().toString());
+            pState.setString(2, user.getUsername());
+            pState.setString(3, user.getPassword());
             pState.execute();
             return true;
         } catch (SQLException e)
@@ -82,7 +108,7 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
     @Override
     public boolean removeUser(UserModel user)
     {
-/*        try
+        try
         {
             String query = "DELETE FROM MangoUser WHERE IDNum = ?";
             PreparedStatement pState = connection.prepareStatement(query);
@@ -93,8 +119,7 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
         {
             e.printStackTrace();
             return false;
-        }*/
-        return false;
+        }
     }
 
     /**
@@ -136,7 +161,7 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
             String query = "UPDATE MangoUser SET Username = ? WHERE IDNum = ?";
             PreparedStatement pState = connection.prepareStatement(query);
             pState.setString(1, newUsername);
-            pState.setString(2, user.getId());                          //TODO: Change to UserModel id getter function
+            pState.setString(2, user.getId().toString());                          //TODO: Change to UserModel id getter function
             pState.execute();
             return true;
         } catch (SQLException e)
@@ -154,7 +179,7 @@ public class UserTable extends SQLDatabase implements InterfaceUserDatabase
             String query = "UPDATE MangoUser SET Password = ? WHERE IDNum = ?";
             PreparedStatement pState = connection.prepareStatement(query);
             pState.setString(1, newPassword);
-            pState.setString(2, user.getId());                          //TODO: Change to UserModel id getter function
+            pState.setString(2, user.getId().toString());                          //TODO: Change to UserModel id getter function
             pState.execute();
             return true;
         } catch (SQLException e)

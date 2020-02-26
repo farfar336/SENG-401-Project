@@ -7,8 +7,10 @@ package model;
  * 		-Have a method to retrieve username and password
  */
 
-public class UserModel { 
-	
+import java.util.UUID;
+
+public class UserModel {
+    private UUID id;
     private String username; 
     private String password; 
     
@@ -16,9 +18,18 @@ public class UserModel {
     public UserModel(String username,String password) {
     	this.username = username;
     	this.password = password;
+    	id = UUID.randomUUID();
     }
-    
-    //Returns the username
+
+    public UserModel(String username,String password, UUID id)
+    {
+        this.username = username;
+        this.password = password;
+        this.id = id;
+    }
+
+
+        //Returns the username
     public String getUsername()  { 
         return username; 
     } 
@@ -36,6 +47,16 @@ public class UserModel {
     //Sets a new password
     public void setPassword(String password)  { 
         this.password = password; 
-    } 
-} 
+    }
+
+    public UUID getId()
+    {
+        return id;
+    }
+
+    public String toString()
+    {
+        return "User " + username;
+    }
+}
 

@@ -15,6 +15,12 @@ public class UserRepo implements InterfaceUserDatabase
     }
 
     @Override
+    public Optional<UserModel> getUser(String username)
+    {
+        return userTable.getUser(username);
+    }
+
+    @Override
     public boolean addUser(UserModel user)
     {
         return userTable.addUser(user);
@@ -64,6 +70,15 @@ public class UserRepo implements InterfaceUserDatabase
         {
             System.out.println("Login unsuccessful\n");
         }
+
+        UserModel alyssa = db.getUser("alyssa").get();
+        System.out.println(alyssa);
+
+        //db.changePassword(alyssa, "whooooo");
+        //db.changeUsername(alyssa, "Whoooooo");
+
+        db.removeUser(alyssa);
+
 
 
 

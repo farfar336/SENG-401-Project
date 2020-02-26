@@ -6,6 +6,7 @@ import java.util.Optional;
 
 public interface InterfaceUserDatabase
 {
+    public Optional<UserModel> getUser(String username);
     public boolean addUser(UserModel user);
     public boolean removeUser(UserModel user);
     public Optional<UserModel> login(String username, String password);
